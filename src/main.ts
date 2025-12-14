@@ -5,20 +5,36 @@ import { ConfigService } from '@nestjs/config';
 import { SYSTEM_MESSAGES } from './common/constants/system-messages.constant';
 import { formatSysMessage } from './common/utils/formatSysMessage.util';
 import { DataSource } from 'typeorm';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { apiReference } from '@scalar/nestjs-api-reference';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   const app = await NestFactory.create(AppModule);
 
+  const config = new DocumentBuilder()
+    .setTitle('Okrika Yard Backend Documentation')
+    .setDescription(
+      'This is the OPENAPI/Swagger documentation for Okrika Yard Backend',
+    )
+    .setVersion('1.0')
+    .build();
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('/api/docs', app, documentFactory);
+
+  app.use(
+    '/api/reference',
+    apiReference({
+      content: documentFactory,
+      theme: 'purple',
+      title: 'Okrika Yard Backend Reference',
+    }),
+  );
+
   const configService = app.get(ConfigService);
   const port = configService.get<number>('port') as number | string;
   const dataSource = app.get(DataSource);
-
-  logger.log('Attempting database connection...');
-  logger.log(
-    `Database config - Host: ${configService.get('database.host')}, Port: ${configService.get('database.port')}, User: ${configService.get('database.username')}, DB: ${configService.get('database.name')}`,
-  );
 
   if (dataSource.isInitialized) {
     logger.log(SYSTEM_MESSAGES.SERVER.DATABASE_STARTUP);
@@ -38,6 +54,8 @@ async function bootstrap() {
   await app.listen(port);
 
   logger.log(formatSysMessage(SYSTEM_MESSAGES.SERVER.STARTUP, port));
+  logger.log(formatSysMessage(SYSTEM_MESSAGES.SERVER.API_DOC_STARTUP, port));
+  logger.log(formatSysMessage(SYSTEM_MESSAGES.SERVER.API_DOC_REFERENCE, port));
 }
 
 bootstrap();
