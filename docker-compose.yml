@@ -10,9 +10,11 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_INITDB_ARGS: '-c password_encryption=scram-sha-256 -A scram-sha-256'
     ports:
-      - '${DB_PORT}:5432'
+      - '0.0.0.0:${DB_PORT}:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - okrika_network
 
   # Redis Service
   redis:
@@ -20,10 +22,16 @@ services:
     container_name: okrika_redis
     restart: always
     ports:
-      - '${REDIS_PORT}:6379'
+      - '0.0.0.0:${REDIS_PORT}:6379'
     volumes:
       - redis_data:/data
+    networks:
+      - okrika_network
 
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  okrika_network:
+    driver: bridge
