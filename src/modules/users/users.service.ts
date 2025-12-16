@@ -26,4 +26,21 @@ export class UsersService {
       data: users,
     };
   }
+
+  /**
+   * @description a function that finds a user by email and returns the user
+   * @returns object the user found
+   */
+  async getUserByEmail(email: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      throw new NotFoundException(SYSTEM_MESSAGES.USER.NOT_FOUND);
+    }
+
+    return {
+      message: SYSTEM_MESSAGES.USER.FIND_ONE,
+      data: user,
+    };
+  }
 }
