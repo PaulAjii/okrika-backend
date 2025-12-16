@@ -10,6 +10,17 @@ export const SYSTEM_MESSAGES = {
 
   USER: {
     GET_ALL: 'All users fetched successfully',
-    NOT_FOUND: 'No users found in the database',
+    NOT_FOUND: 'No user found',
+    FIND_ONE: 'User fetched successfully',
+    CREATE: 'User created successfully',
+    UPDATE: 'User updated successfully',
+    DELETE: 'User deleted successfully',
+  },
+
+  AUTH: {
+    LOGIN: 'User logged in successfully',
+    INVALID_CREDENTIALS: 'Invalid email or password',
+    LOGOUT: 'User logged out successfully',
+    EMPTY_FIELDS: 'Email and password fields cannot be empty',
   },
 };
