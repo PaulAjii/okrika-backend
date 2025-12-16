@@ -10,5 +10,6 @@ export const SYSTEM_MESSAGES = {
 
   USER: {
     GET_ALL: 'All users fetched successfully',
+    NOT_FOUND: 'No users found in the database',
   },
 };
