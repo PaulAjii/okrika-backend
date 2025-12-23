@@ -19,8 +19,11 @@ export const SYSTEM_MESSAGES = {
 
   AUTH: {
     LOGIN: 'User logged in successfully',
+    REGISTER: 'User registered successfully',
     INVALID_CREDENTIALS: 'Invalid email or password',
+    INVALID_TOKEN: 'Invalid or expired token',
     LOGOUT: 'User logged out successfully',
     EMPTY_FIELDS: 'Email and password fields cannot be empty',
+    USER_EXIST: 'User with email: "{0}" already exists',
   },
 };
