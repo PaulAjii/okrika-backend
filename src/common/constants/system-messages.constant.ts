@@ -25,5 +25,6 @@ export const SYSTEM_MESSAGES = {
     LOGOUT: 'User logged out successfully',
     EMPTY_FIELDS: 'Email and password fields cannot be empty',
     USER_EXIST: 'User with email: "{0}" already exists',
+    FORBIDDEN: 'You do not have permission to access this resource',
   },
 };
