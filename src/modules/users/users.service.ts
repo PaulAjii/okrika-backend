@@ -44,7 +44,7 @@ export class UsersService {
       .where('user.email = :email', { email })
       .addSelect('user.password');
 
-    return await query.getOneOrFail();
+    return await query.getOne();
   }
 
   async createUser(userData: Partial<User>) {
