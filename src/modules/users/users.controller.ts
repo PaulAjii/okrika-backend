@@ -10,7 +10,7 @@ export class UsersController {
   @Get()
   @ApiOkResponse({ description: 'All users fetched successfully' })
   @ApiOperation({ summary: 'Get all users' })
-  findAll() {
-    return this.usersService.getUsers();
+  async findAll() {
+    return await this.usersService.getUsers();
   }
 }

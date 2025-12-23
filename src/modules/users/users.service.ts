@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SYSTEM_MESSAGES } from 'src/common/constants/system-messages.constant';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
@@ -10,6 +11,8 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
+
+  logger = new Logger(UsersService.name);
   /**
    * @description a function that returns all the users in a database
    * @returns user[] an array of users in the database
@@ -18,7 +21,7 @@ export class UsersService {
     const users = await this.userRepository.find();
 
     if (!users || users.length === 0) {
-      throw new NotFoundException(SYSTEM_MESSAGES.USER.NOT_FOUND);
+      this.logger.log(SYSTEM_MESSAGES.USER.NOT_FOUND);
     }
 
     return {
@@ -32,15 +35,20 @@ export class UsersService {
    * @returns object the user found
    */
   async getUserByEmail(email: string) {
-    const user = await this.userRepository.findOne({ where: { email } });
+    return await this.userRepository.findOne({ where: { email } });
+  }
 
-    if (!user) {
-      throw new NotFoundException(SYSTEM_MESSAGES.USER.NOT_FOUND);
-    }
+  async validateUserForLogin(email: string) {
+    const query = this.userRepository
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email })
+      .addSelect('user.password');
 
-    return {
-      message: SYSTEM_MESSAGES.USER.FIND_ONE,
-      data: user,
-    };
+    return await query.getOneOrFail();
+  }
+
+  async createUser(userData: Partial<User>) {
+    const user = this.userRepository.create(userData);
+    return this.userRepository.save(user);
   }
 }
