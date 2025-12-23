@@ -12,7 +12,9 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { SYSTEM_MESSAGES } from 'src/common/constants/system-messages.constant';
+import { Public } from 'src/common/decorators/public.decorator';
 
+@Public()
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
