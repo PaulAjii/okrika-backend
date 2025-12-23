@@ -1,10 +1,13 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { UserRole } from 'src/common/constants/roles.enum';
+import { SellerProfile } from '../../seller/entities/seller.entity';
+import { Address } from '../../address/entities/address.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
+  // AUTH
   @Column({ type: 'varchar', unique: true })
   email: string;
 
@@ -15,16 +18,37 @@ export class User extends BaseEntity {
   @Column({ type: 'enum', enum: UserRole, default: UserRole.BUYER })
   role: UserRole;
 
+  // PROFILE
   @Column({ type: 'varchar' })
   firstName: string;
 
   @Column({ type: 'varchar' })
   lastName: string;
 
-  // SELLER DETAILS
-  @Column({ type: 'varchar', nullable: true })
-  storeName: string;
+  @Column({ nullable: true })
+  phoneNumber: string;
 
-  @Column({ type: 'varchar', nullable: true })
-  storeDescription: string;
+  // METADATA
+  @Column({ default: false })
+  isEmailVerified: boolean;
+
+  @Exclude()
+  @Column({ nullable: true, select: false })
+  emailVerificationToken: string;
+
+  @Column({ default: true })
+  isActive: boolean;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  lastLogin: Date;
+
+  @Column({ default: false })
+  acceptsMarketing: boolean;
+
+  // RELATIONS
+  @OneToMany(() => Address, (address) => address.user)
+  addresses: Address[];
+
+  @OneToOne(() => SellerProfile, (sellerProfile) => sellerProfile.user)
+  sellerProfile: SellerProfile;
 }
