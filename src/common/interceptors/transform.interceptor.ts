@@ -4,11 +4,12 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export interface Response<T> {
-  status_code: number;
+  statusCode: number;
   success: boolean;
   message: string;
   data?: T;
@@ -31,10 +32,26 @@ export class TransformInterceptor<T> implements NestInterceptor<
         const status_code = response.statusCode;
 
         const message = data?.message;
-        const cleanData = data && data.data && data.message ? data.data : data;
+        let cleanData = data && data.data && data.message ? data.data : data;
+
+        if (cleanData && Array.isArray(cleanData)) {
+          cleanData = cleanData.map((item) =>
+            plainToClass(item.constructor, item, {
+              excludeExtraneousValues: false,
+            }),
+          );
+        } else if (
+          cleanData &&
+          typeof cleanData === 'object' &&
+          cleanData.constructor.name !== 'Object'
+        ) {
+          cleanData = plainToClass(cleanData.constructor, cleanData, {
+            excludeExtraneousValues: false,
+          });
+        }
 
         return {
-          status_code: status_code,
+          statusCode: status_code,
           success: true,
           message: message,
           data: cleanData,
