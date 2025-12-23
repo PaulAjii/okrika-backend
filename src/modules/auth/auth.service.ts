@@ -54,7 +54,7 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const user = await this.usersService.validateUserForLogin(loginDto.email);
 
-    if (!user) {
+    if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
       throw new UnauthorizedException(SYSTEM_MESSAGES.AUTH.INVALID_CREDENTIALS);
     }
 
